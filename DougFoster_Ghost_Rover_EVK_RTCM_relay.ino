@@ -233,7 +233,6 @@ void configPins() {
  */
 void beginSerialMonitor() {
 
-    // -- Begin USB interface. --
     Serial.begin(SERIAL_MON_SPEED);
     Serial.printf("Begin serial monitor (USB) @ %i bps.\n", SERIAL_MON_SPEED);
 }
