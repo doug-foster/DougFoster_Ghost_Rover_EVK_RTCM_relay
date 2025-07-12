@@ -1,10 +1,14 @@
 /**
- * EVK RTCM relay.
+ * ***********************************
+ *      Ghost Rover - EVK RTCM to HC-12 radio relay.
+ * ***********************************
  * 
- * Relays RTCM3 data from UART2 on a ZED F9P in a SparkFun EVK to an HC-12 radio.
+ * Relay RTCM3 data from UART2 on a ZED F9P in a SparkFun EVK to an HC-12 radio.
  * 
  * @author   D. Foster <doug@dougfoster.me>.
- * @since    0.1.0 [2025-05-29-10:30pm] New.
+ * @since    0.1.0 [2025-05-29-08:30pm] New.
+ * @since    0.1.1 [2025-06-06-06:00pm].
+ * @since    0.1.2 [2025-07-11-09:00pm] Parallel "DougFoster_Ghost_Rover_BT_relay.ino".
  * @link     http://dougfoster.me.
  *
  * ===================================
@@ -34,7 +38,7 @@
  *     -- EVK   https://www.sparkfun.com/sparkfun-rtk-evk.html.
  *     -- MCU   https://www.sparkfun.com/sparkfun-thing-plus-esp32-s3.html.
  *     -- Radio (433.4-473.0 MHz, 100mW, U.FL): https://www.amazon.com/HiLetgo-Wireless-Replace-Bluetooth-Antenna/dp/B01MYTE1XR.
-  *    -- Rover https://github.com/doug-foster/DougFoster_Ghost_Rover/.
+ *     -- Rover https://github.com/doug-foster/DougFoster_Ghost_Rover/.
  *
  * --- Other components. ---
  *     -- Radio antenna. --
@@ -50,12 +54,12 @@
  *     -- SparkFun    https://learn.sparkfun.com/tutorials/tags/gnss.
  * 
  * --- Dev environment. ---
- *     -- Arduino IDE 2.3.6.
+ *     -- IDE: Arduino 2.3.6.
  *     -- Board: "Sparkfun ESP32-S3 Thing Plus" (~/Library/Arduino15/packages/esp32/hardware/esp32/3.2.0/boards.txt)
  *     -- VS Code 1.100.2 (Extensions: Better Comments, Bookmarks, C/C++, C/C++ Extension Pack, C/C++ Themes,
  *        CMake Tools, Dash, Diff Folders, Git Graph, GitHub Theme, GitLens, Markdown All in One, Serial Monitor,
  *        SFTP).
- *     -- GitHub repo: https://github.com/doug-foster/DougFoster_Ghost_Rover/.
+ *     -- GitHub repo: https://github.com/doug-foster/DougFoster_Ghost_Rover_EVK_RTCM_relay
  * 
  * --- Caveats. ---
  *     -- SoftwareSerial library is not supported on ESP32-S3 (does work on ESP32-C6).
@@ -65,8 +69,8 @@
  *
  * --- Code flow. ---
  *     -- Include libraries.
- *     -- Global vars: define vars, set constants, prototypes.
- *     -- Functions: init, config, begin, start, check, callback, operation, tasks, test.
+ *     -- Global vars: define vars, set constants, declarations.
+ *     -- Functions: init, config, begin, start, check, display, callback, operation, tasks, test.
  *     -- Setup.
  *     -- Loop.
  */
@@ -84,27 +88,59 @@
 // ===================================
 
 // -- Version. --
-const char BUILD_DATE[]   = "2025-05-29-15:00";     // 24hr format, need to fit max (16) characters.
+const char BUILD_DATE[]   = "2025-07-11-21:00";     // 24hr format, need to fit max (16) characters.
 const char MAJOR_VERSION  = '0';
 const char MINOR_VERSION  = '1';
-const char PATCH_VERSION  = '0';
+const char PATCH_VERSION  = '2';
+
+// -- Communication port usage. --
+// Serial monitor (USB).
+//
+// Serial 1 (UART1) RTCM_TX: ESP32-S3 Thing+ PTH 5 -> EVK TX2 {green wire} - not used.
+// Serial 1 (UART1) RTCM_RX: ESP32-S3 Thing+ PTH 4 <- EVK RX2 {yellow wire} - RTCM in.
+//
+// Serial 2 (UART2) HC12_TX: ESP32-S3 Thing+ PTH 43 (UART2) <- HC-12 RX {yellow wire}.
+// Serial 2 (UART2) HC12_RX: ESP32-S3 Thing+ PTH 44 (UART2) -> HC-12 RX {white wire}.
 
 // -- Pin (pth) definitions. --
-const uint8_t PTH_RTCM_TX = 4;      // ESP32-S3 Thing+ PTH 4 (UART1) <-> EVK UART2 TX (green wire) - RTCM.
-const uint8_t PTH_RTCM_RX = 5;      // ESP32-S3 Thing+ PTH 5 (UART1) <-> EVK UART2 RX (yellow wire) - RTCM.
-const uint8_t LED_RADIO   = 6;      // ESP32-S3 Thing+ PTH 6 <-> Blue LED (blue wire).
-const uint8_t LED_SWITCH  = 10;     // ESP32-S3 Thing+ PTH 10 <-> Rocker switch (red wire).
-const uint8_t PTH_SET     = 42;     // ESP32-S3 Thing+ PTH 42 (SET) <-> HC-12 SET (blue wire).
-const uint8_t PTH_TX      = 43;     // ESP32-S3 Thing+ PTH 43 (UART2) <-> HC-12 RX (yellow wire).
-const uint8_t PTH_RX      = 44;     // ESP32-S3 Thing+ PTH 44 (UART2) <-> HC-12 TX (white wire).
+const uint8_t RTCM_TX = 5;
+const uint8_t RTCM_RX = 4;
 
-// -- Serial USB (monitor). --
-const  uint8_t  NUM_COMMANDS     = 4;           // How many possible commands.
+const uint8_t HC12_SET = 42;        // ESP32-S3 Thing+ <-> HC-12 SET {blue wire}.
+const uint8_t HC12_TX  = 43;
+const uint8_t HC12_RX  = 44;
+
+const uint8_t LED_RADIO  = 6;       // ESP32-S3 Thing+ <-> Red LED {blue wire}.
+const uint8_t LED_SWITCH = 10;      // ESP32-S3 Thing+ <-> Rocker switch {red wire}.
+
+// -- Serial monitor. --
 const  uint32_t SERIAL_MON_SPEED = 115200;      // Serial USB monitor speed.
-       bool     testLEDr;                       // Test radio LED.
-       bool     testRad;                        // Test radio.
-       bool     debugRad;                       // Debug radio.
-       bool     reset;                          // Reset MCU.
+
+// -- Serial 1. --
+const uint32_t       SERIAL1_SPEED = 57600;     // ZED-F9P default speed.
+      HardwareSerial serial1(1);                // UART 1 object.
+
+// -- Serial 2. --
+const uint32_t       SERIAL2_SPEED = 9600;      // HC-12 default speed.
+      HardwareSerial serial2(2);                // UART 2 object.
+
+// -- I2C. --
+// Power only.
+
+// -- Timing. --
+const TickType_t LED_TIME_FLASH_ON  = 100/portTICK_PERIOD_MS;  // Time (ms).
+
+// -- Task handles. --
+TaskHandle_t radioRtcmLEDtaskHandle;            // Radio RTCM LED task handle.
+
+// -- I/O. --
+       char monitorChar;                        // Monitor i/o character.
+       char serial1Char;                        // Serial 1 i/o character.
+
+// -- Operation. --
+
+// -- Commands. --
+const  uint8_t  NUM_COMMANDS           = 4;     // How many possible commands.
 const  char     EXIT_TEST              = '!';   // Exit test mode.
 const  char*    commands[NUM_COMMANDS] = {      // Valid commands. Point to array of C-strings.
                                          "testLEDr",
@@ -112,33 +148,15 @@ const  char*    commands[NUM_COMMANDS] = {      // Valid commands. Point to arra
                                          "debugRad",
                                          "reset"
 };
-       char     inputCharMon;                   // Monitor input read character.
        char     monitorCommand[11];             // Serial monitor command (C-string).
        char     radioCommand[11];               // serial (radio) test command (C-string).
+       bool     testLEDr;                       // Test radio LED.
+       bool     testRad;                        // Test radio.
+       bool     debugRad;                       // Debug radio.
+       bool     reset;                          // Reset MCU.
 
-// -- Serial1 (EVK-RTCM). --
-const uint32_t       SERIAL1_SPEED = 38400;     // ZED-F9P default speed.
-      char           charRTCM;                  // RTCM character.
-      HardwareSerial serialEVK(1);              // UART1 object for ESP32-S3. Used for EVK.
-
-// -- Serial2 (HC-12 radio). --
-const uint32_t       SERIAL2_SPEED = 9600;      // HC-12 default speed.
-      HardwareSerial serialRadio(2);            // UART2 object for ESP32-S3. Used for HC-12 radio.
-
-// -- I2C. --
-// Power only.
-
-// -- LED display. --
-const TickType_t LED_TIME_FLASH_ON  = 100/portTICK_PERIOD_MS;  // Time (ms).
-const TickType_t LED_TIME_FLASH_OFF = 100/portTICK_PERIOD_MS;  // Time (ms).
-
-// -- Task handles. --
-TaskHandle_t radioRtcmLEDtaskHandle;            // Radio RTCM LED task handle.
-
-// -- Operation. --
-
-// -- Prototypes. --
-void updateLED(char, char, char);              // Eliminate compiler scope error due to definition order.
+// -- Declarations. --                          // Eliminate compiler scope error due to definition order.
+void updateLEDs(char, char, char);
 
 // -- Test. --
 
@@ -158,19 +176,24 @@ void updateLED(char, char, char);              // Eliminate compiler scope error
  */
 void initVars() {
 
-    // -- Serial USB (monitor). --
+    Serial.println("Running setup().");
     Serial.print("Initialize global vars");
-    memset(monitorCommand, '\0', sizeof(monitorCommand));
-    memset(radioCommand, '\0', sizeof(radioCommand));
 
-    // -- Serial1 (EVK-RTCM). --
-    charRTCM = '\0';
+
+    // -- Serial 1. --
+    serial1Char = '\0';
 
     // -- Operation. --
+
+    // -- Commands. --
+    memset(monitorCommand, '\0', sizeof(monitorCommand));
+    memset(radioCommand, '\0', sizeof(radioCommand));
     testLEDr  = false;
     testRad   = false;
     debugRad  = false;
     reset     = false;
+
+    Serial.println(".");
 }
 
 // --- Config. ---
@@ -187,10 +210,12 @@ void configPins() {
 
     // -- Initialize pin modes. --
     Serial.print("Config pins");
-    pinMode(LED_RADIO,   OUTPUT);
+    pinMode(LED_RADIO, OUTPUT);
+    pinMode(HC12_SET,  OUTPUT);                 // HC-12 - set pin for AT command mode.
 
     // -- Initialize pin values. --
     digitalWrite(LED_RADIO, LOW);
+    digitalWrite(HC12_SET, HIGH);               // HC-12 - initially set pin for transparent mode.
     Serial.println(".");
 }
 
@@ -208,44 +233,27 @@ void beginSerialUSB() {
 
     // -- Begin USB interface. --
     Serial.begin(SERIAL_MON_SPEED);
-    Serial.println("\nBegin serial monitor(USB) @ 115,200 bps.");
+    Serial.printf("Begin serial monitor (USB) @ %i bps.\n", SERIAL_MON_SPEED);
 }
 
 /**
  * ------------------------------------------------
- *      Begin serial1 (UART1) for EVK-RTCM.
+ *      Begin serial interfaces.
  * ------------------------------------------------
  * 
  * @return void No output is returned.
  * @since  0.1.0 [2025-05-29-10:30pm] New.
  */
-void beginSerial1EVK() {
+void beginSerialInterfaces() {
 
-    // -- Begin serial1 interface. --
-    Serial.print("Begin serial1 (UART1) for EVK-RTCM @ 38,400 bps");
-    serialEVK.begin(SERIAL1_SPEED, SERIAL_8N1, PTH_RTCM_TX, PTH_RTCM_RX);     // UART1 object. TX<->TX, RX<->RX.
-    Serial.println(".");
-}
-
-/**
- * ------------------------------------------------
- *      Begin serial2 (UART2) for HC-12 radio.
- * ------------------------------------------------
- *
- * @return void No output is returned.
- * @since  0.1.0 [2025-05-29-10:30pm] New.
- */
-void beginSerial2Radio() {
-
-    // -- Begin serial2 interface. --
-    Serial.print("Begin serial2 (UART2) for HC-12 radio @ 9,600 bps");
-    serialRadio.begin(SERIAL2_SPEED, SERIAL_8N1, PTH_RX, PTH_TX);   // UART2 object. TX<->RX, RX<->TX.
+    // -- Serial 1 interface. --
+    Serial.printf("\nBegin serial 1 (UART1) @ %i bps", SERIAL1_SPEED);
+    serial1.begin(SERIAL1_SPEED, SERIAL_8N1, RTCM_RX, RTCM_TX);     // UART1 object. RX, TX.
     Serial.println(".");
 
-    // -- Set pin. --
-    Serial.print("Radio config pin set high (transparent mode)");
-    pinMode(PTH_SET, OUTPUT);                                       // Prepare pin for HC-12 AT command set mode.
-    digitalWrite(PTH_SET, HIGH);                                    // Set pin HIGH for transparent.
+    // -- Serial2 interface. --
+    Serial.printf("Begin serial 2 (UART2) @ %i bps", SERIAL2_SPEED);
+    serial2.begin(SERIAL2_SPEED, SERIAL_8N1, HC12_RX, HC12_TX);     // UART2 object. RX, TX.
     Serial.println(".");
 }
 
@@ -278,7 +286,7 @@ void startTasks() {
     vTaskSuspend(radioRtcmLEDtaskHandle);
 
     // -- Print status. --
-    Serial.println("Create/suspend LED task: radio RTCM.");
+    Serial.println("LED task: radio RTCM.");
 }
 
 /**
@@ -295,9 +303,9 @@ void startUI() {
 
     // -- Verify LEDs.
     Serial.print("Verify LEDs");
-    updateLED('1');        // LED on.
-    delay(1000);            // Pause.
-    updateLED('0');        // LED off.
+    updateLEDs('1');        // All LEDs on.
+    delay(2000);            // Pause & show startup UI for 2 seconds.
+    updateLEDs('0');        // All LEDs off.
     Serial.println(".");
 
     // -- Loop. --
@@ -311,13 +319,13 @@ void startUI() {
 
 /**
  * ------------------------------------------------
- *      Check for serial (USB) input.
+ *      Check serial monitor (USB) for input.
  * ------------------------------------------------
  *
  * @return void No output is returned.
  * @since  0.1.0 [2025-05-29-10:30pm] New.
  */
-void checkSerialUSB(char print = ' ') {
+void checkSerialMonitor(char print = ' ') {
 
     // -- Local vars. --
     static uint8_t posnMon = 0;         // Persistant input position for USB serial monitor command.
@@ -328,7 +336,7 @@ void checkSerialUSB(char print = ' ') {
     if(print == 'p') {
         Serial.print("\nValid commands: ");
         for (size_t i = 0; i < NUM_COMMANDS-1; i++) {
-            if ((i != 0) && (i % 7 == 0)) {
+            if ((i != 0) && (i % 7 == 0)) {             // List a max of (7) commands per line.
                 Serial.println();
             }
             Serial.printf("%s, ", commands[i]);
@@ -337,25 +345,25 @@ void checkSerialUSB(char print = ' ') {
         return;                         // Done for now.
     }
 
-    // -- Read serial input. --
-    while (Serial.available() > 0) {    // Input from serial monitor.
-        inputCharMon = Serial.read();   // Read byte in from USB serial.
-        if (inputCharMon != '\n' && (posnMon < (sizeof(monitorCommand) - 1))) {    // Are we done?
-            monitorCommand[posnMon] = inputCharMon;     // Not done yet, add char to command.
-            posnMon++;                                  // Increment command buffer posn.
+    // -- Read Serial monitor (USB) input. --
+    while (Serial.available() > 0) {                        // Bytes available to be read.
+        monitorChar = Serial.read();                        // Read a byte in.
+        if (monitorChar != '\n' && (posnMon < (sizeof(monitorCommand) - 1))) {    // Are we done?
+            monitorCommand[posnMon] = monitorChar;          // Not done yet, add char to command.
+            posnMon++;                                      // Increment command buffer posn.
         } else {
-            monitorCommand[posnMon] = '\0';             // We're done reading, treat command[] as C-string.
-            posnMon = 0;                                // Reset command buffer position.
+            monitorCommand[posnMon] = '\0';                 // We're done reading, treat command[] as C-string.
+            posnMon = 0;                                    // Reset command buffer position.
 
         // - Which command? -
-        if(*monitorCommand == EXIT_TEST) {              // Reset debug flags & return.
+        if(*monitorCommand == EXIT_TEST) {                  // Reset debug flags & return.
             debugRad   = false;
-            Serial.println();
+            Serial.println("All debugging disabled.");
             return;
         }
-        whichMonitorCommand = 99;       // Which command was entered. Assume invalid until validated.
+        whichMonitorCommand = 99;                           // Which command was entered. Assume invalid until validated.
             for (size_t i = 0; i < NUM_COMMANDS; i++) {
-            if(strcmp(monitorCommand, commands[i]) == 0) {      // Compare C-strings.
+            if(strcmp(monitorCommand, commands[i]) == 0) {  // Compare C-strings.
                 whichMonitorCommand = i;
                 break;
             }
@@ -363,7 +371,7 @@ void checkSerialUSB(char print = ' ') {
 
         // - Valid command? -
         if(whichMonitorCommand < 99) {   
-            // Print the validated command.
+
             // Toggle command flag & print new state.
             switch (whichMonitorCommand) {
                     case 0:
@@ -387,10 +395,9 @@ void checkSerialUSB(char print = ' ') {
             } else {
 
                 // Invalid command.
-                Serial.printf("\n%s is not a valid command. \n", monitorCommand);
+                Serial.printf("\n%s is not a valid command. \n", monitorCommand);   // Invalid command.
 
-                // Display valid serial Monitor commands.
-                checkSerialUSB('p');
+                checkSerialMonitor('p');                                    // Display valid serial Monitor commands.
             }
 
             // - Reset MCU. -
@@ -408,25 +415,25 @@ void checkSerialUSB(char print = ' ') {
                 // Loop.
                 while (true) {                                  // Infinite loop.
                     if (Serial.available() > 0) {
-                        inputCharMon = Serial.read();           // Read input from serial monitor.
+                        monitorChar = Serial.read();            // Read input from serial monitor.
                         Serial.read();                          // Discard newline.
-                        switch (inputCharMon) {
+                        switch (monitorChar) {
                             case EXIT_TEST:                     // All done.
                                 Serial.println("testLEDr disabled.");
                                 testLEDr = false;               // Clear test flag.
                                 return;                         // Exit test mode.
                             case '0':                           // Radio LED - off.
-                                Serial.printf("%c - radio LED off.\n", inputCharMon);
-                                updateLED('0');
+                                Serial.printf("%c - radio LED off.\n", monitorChar);
+                                updateLEDs('0');
                                 break;
                             case '1':                           // BLE LED - on.
-                                Serial.printf("%c - radio LED on.\n", inputCharMon);
-                                updateLED('1');
+                                Serial.printf("%c - radio LED on.\n", monitorChar);
+                                updateLEDs('1');
                                 break;
                             case '2':                           // BLE LED - active.
-                                Serial.printf("%c - radio LED active - 5 cycles.\n", inputCharMon);
+                                Serial.printf("%c - radio LED active - 5 cycles.\n", monitorChar);
                                 for (size_t i = 0; i < 5; i++) {
-                                    updateLED('2');
+                                    updateLEDs('2');
                                     Serial.printf("Blink %i\n", i+1);
                                     delay(1000);
                                 }
@@ -445,9 +452,9 @@ void checkSerialUSB(char print = ' ') {
                 // HC-12 AT command mode.
                 radioCommand[0] = '\0';             // Reset read buffer.
                 posnRad = 0;
-                digitalWrite(PTH_SET, LOW);
-                serialRadio.read();                 // Garbage first character.
-                updateLED('0');                     // Radio LED off - AT command mode.
+                digitalWrite(HC12_SET, LOW);
+                serial2.read();                     // Garbage first character.
+                updateLEDs('0');                    // Radio LED off - AT command mode.
 
                 // Display instructions.
                 Serial.println("\nHC-12 command mode enabled (! to exit)");
@@ -460,35 +467,35 @@ void checkSerialUSB(char print = ' ') {
                 // Loop.
                 while (true) {                                              // Infinite loop.
                     if (Serial.available() > 0) {
-                        inputCharMon = Serial.read();                       // Read input from serial monitor.
-                        if(inputCharMon == EXIT_TEST) {                     // All done?
+                        monitorChar = Serial.read();                        // Read input from serial monitor.
+                        if(monitorChar == EXIT_TEST) {                      // All done?
                             Serial.println("HC-12 command mode disabled.\n");
-                            digitalWrite(PTH_SET, HIGH);
+                            digitalWrite(HC12_SET, HIGH);
                             Serial.read();                                  // Clear the newline.
                             testRad = false;                                // Clear test flag.
                             return;                                         // Exit test mode.
                         } else {
-                            inputCharMon = toupper(inputCharMon);           // Convert char to upper case.
+                            monitorChar = toupper(monitorChar);             // Convert char to upper case.
                         }
-                        switch (inputCharMon) {
+                        switch (monitorChar) {
                             case '\n':                                      // Interact with HC-12.
-                                serialRadio.write(radioCommand);            // Write command to HC-12.
+                                serial2.write(radioCommand);                // Write command to HC-12.
                                 Serial.println("");
                                 delay(200);                                 // Allow HC-12 to process command & respond.
-                                while (serialRadio.available() > 0) {       // Read response from HC-12.
-                                    inputCharMon = '\0';
-                                    inputCharMon = serialRadio.read();
-                                    if ((255 != (int) inputCharMon) && (posnRad > 0)) {    // Ignore first garbage character.
-                                        Serial.print(inputCharMon);         // Echo character to serial monitor.
+                                while (serial2.available() > 0) {           // Read response from HC-12.
+                                    monitorChar = '\0';
+                                    monitorChar = serial2.read();
+                                    if ((255 != (int) monitorChar) && (posnRad > 0)) {    // Ignore first garbage character.
+                                        Serial.print(monitorChar);          // Echo character to serial monitor.
                                     }
                                 }
                                 radioCommand[0] = '\0';                     // Reset read buffer.
                                 posnRad=0;
                                 break;
                             default:                                        // Echo & save input character.
-                                if (255 != (int) inputCharMon) {
-                                    Serial.print(inputCharMon);
-                                    radioCommand[posnRad] = inputCharMon;   // Add character to command buffer.
+                                if (255 != (int) monitorChar) {
+                                    Serial.print(monitorChar);
+                                    radioCommand[posnRad] = monitorChar;    // Add character to command buffer.
                                     posnRad++;
                                 }
                         }
@@ -504,47 +511,59 @@ void checkSerialUSB(char print = ' ') {
 
 /**
  * ------------------------------------------------
- *      Check serial1 (EVK-RTCM). Send to serial2 (HC-12 radio).
+ *      Check serial 1 (EVK-RTCM). Send to serial 2 (HC-12 radio).
  * ------------------------------------------------
  *
  * @return void No output is returned.
  * @since  0.1.0 [2025-05-29-10:30pm] New.
+ * @since  0.1.1 [2025-06-07-06:30pm] Tweak debug output.
  * @see    beginSerial1EVK(), beginSerial2Radio().
  * @link   https://github.com/sparkfun/SparkFun_u-blox_GNSS_v3/blob/main/examples/ZED-F9P/Example3_StartRTCMBase/Example3_StartRTCMBase.ino.
  */
 void checkRTCMtoRadio() {
 
     // -- Local vars. --
-          uint16_t count    = 0;
-    const uint16_t maxCount = 500;
+    static uint8_t  preambleCount = 0;
+    static uint16_t byteCount     = 0;
+    static uint32_t sentCount     = 0;
 
-    // -- Read serial1 (EVK-RTCM) input. Send to serial2 (HC-12 radio). --
-    if (serialEVK.available() > 0) {        // serial1 (EVK-RTCM) data to read?
+    // -- Read serial 1 (EVK-RTCM) input. Send to serial 2 (HC-12 radio). --
+    if (serial1.available() > 0) {                      // serial1 (EVK-RTCM) data to read?
 
-        // - Read from serial1 (EVK-RTCM). -
-        charRTCM = serialEVK.read();        // Read a character @ SERIAL1_SPEED.
+        // - Read from serial 1 (EVK-RTCM). -
+        serial1Char = serial1.read();                   // Read a character @ SERIAL1_SPEED.
+        byteCount++;                                    // Increment byte counter.
 
-        // - Write to serial2 (HC-12 radio). -
-        serialRadio.write(charRTCM);        // Write a character @ SERIAL2_SPEED.
-
-        // - Debug. -
-        if (debugRad) {
-            Serial.printf("%x\n", charRTCM);
-        }
+        // - Write to serial 2 (HC-12 radio). -
+        serial2.write(serial1Char);                     // Write a character @ SERIAL2_SPEED.
 
         // - Update UI. -
-        if (count == maxCount) {
-            updateLED('2');                 // Radio LED - active.
-            count = 0;
+        // Look for RTCM preamble = '11010011 000000xx'
+        if ((preambleCount == 0) && (serial1Char == 0xd3)) {
+            preambleCount++;
+        } else if ((preambleCount == 1) && (((int)serial1Char) < 3)) {
+            preambleCount++;
         } else {
-            count++;
+            if (debugRad) {                             // Debug.
+                Serial.printf("%02x", serial1Char);     // Print the byte.
+            }
+            preambleCount = 0;                          // Reset preamble counter.
+        }
+        if (preambleCount == 2) {
+            sentCount++;                                // Increment the sentence counter.
+            if (debugRad) {                             // Debug.
+                Serial.printf("\n#%i - %i bytes.\n\nd3%02x", sentCount, byteCount, serial1Char);
+            }
+            updateLEDs('2');                            // Flash the LED.
+            byteCount = 0;                              // Reset the byte count.
+            preambleCount = 0;                          // Reset preamble counter.
         }
     }
 }
 
 /**
  * ------------------------------------------------
- *      Toggle LED.
+ *      Toggle LEDs.
  * ------------------------------------------------
  *
  * @param  char ledR Radio LED.
@@ -553,7 +572,7 @@ void checkRTCMtoRadio() {
  * @link   https://www.freertos.org/Documentation/02-Kernel/04-API-references/02-Task-control/06-vTaskSuspend.
  * @link   https://www.freertos.org/Documentation/02-Kernel/04-API-references/02-Task-control/07-vTaskResume.
  */
-void updateLED(char ledR) {
+void updateLEDs(char ledR) {
 
     // --- Radio LED. ---
     switch (ledR) {
@@ -603,11 +622,10 @@ void radioRtcmLEDtask(void * pvParameters) {
 // ===================================
 
 void setup() {
-    beginSerialUSB();               // Begin serial (USB) for monitor.
+    beginSerialUSB();               // Begin serial monitor (USB).
     initVars();                     // Initialize global vars.
     configPins();                   // Initialize pin modes & pin values.
-    beginSerial1EVK();              // Begin serial1 (UART1) for EVK-RTCM.
-    beginSerial2Radio();            // Begin serial2 (UART2) for HC-12 radio.
+    beginSerialInterfaces();        // Begin serial interfaces.
     startTasks();                   // Start tasks.
     startUI();                      // Start UI.
 }                                               
@@ -617,6 +635,6 @@ void setup() {
 // ===================================
 
 void loop() {
-    checkSerialUSB();               // Check for serial (USB) input.
-    checkRTCMtoRadio();             // Check serial1 (EVK-RTCM). Send to serial2 (HC-12 radio).
+    checkSerialMonitor();           // Check for serial (USB) input.
+    checkRTCMtoRadio();             // Check serial 1 (EVK-RTCM). Send to serial 2 (HC-12 radio).
 }
