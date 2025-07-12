@@ -101,6 +101,8 @@ const char PATCH_VERSION  = '2';
 //
 // Serial 2 (UART2) HC12_TX: ESP32-S3 Thing+ PTH 43 (UART2) <- HC-12 RX {yellow wire}.
 // Serial 2 (UART2) HC12_RX: ESP32-S3 Thing+ PTH 44 (UART2) -> HC-12 RX {white wire}.
+//
+// I2C: Power only.
 
 // -- Pin (pth) definitions. --
 const uint8_t RTCM_TX = 5;
@@ -229,7 +231,7 @@ void configPins() {
  * @return void No output is returned.
  * @since  0.1.0 [2025-05-29-10:30pm] New.
  */
-void beginSerialUSB() {
+void beginSerialMonitor() {
 
     // -- Begin USB interface. --
     Serial.begin(SERIAL_MON_SPEED);
@@ -622,7 +624,7 @@ void radioRtcmLEDtask(void * pvParameters) {
 // ===================================
 
 void setup() {
-    beginSerialUSB();               // Begin serial monitor (USB).
+    beginSerialMonitor();           // Begin serial monitor (USB).
     initVars();                     // Initialize global vars.
     configPins();                   // Initialize pin modes & pin values.
     beginSerialInterfaces();        // Begin serial interfaces.
