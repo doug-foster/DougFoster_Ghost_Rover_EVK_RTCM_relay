@@ -9,7 +9,7 @@
  * @since    0.1.0 [2025-05-29-08:30pm] New.
  * @since    0.1.1 [2025-06-06-06:00pm].
  * @since    0.1.2 [2025-07-11-09:00pm] Parallel "DougFoster_Ghost_Rover_BT_relay.ino".
- * @since    0.1.2 [2025-08-20-02:30pm] Checking RTCM out.
+ * @since    0.1.2 [2025-08-20-18:00pm] Tweak output.
  * @link     http://dougfoster.me.
  *
  * ===================================
@@ -56,7 +56,7 @@
  * 
  * --- Dev environment. ---
  *     -- IDE: Arduino 2.3.6.
- *     -- Board: "Sparkfun ESP32-S3 Thing Plus" (~/Library/Arduino15/packages/esp32/hardware/esp32/3.2.0/boards.txt)
+ *     -- Board: "Sparkfun ESP32-S3 Thing Plus" (~/Library/Arduino15/packages/esp32/hardware/esp32/3.3.0/boards.txt)
  *     -- VS Code 1.100.2 (Extensions: Better Comments, Bookmarks, C/C++, C/C++ Extension Pack, C/C++ Themes,
  *        CMake Tools, Dash, Diff Folders, Git Graph, GitHub Theme, GitLens, Markdown All in One, Serial Monitor,
  *        SFTP).
@@ -89,7 +89,7 @@
 // ===================================
 
 // -- Version. --
-const char BUILD_DATE[]   = "2025-08-20-14:30";     // 24hr format, need to fit max (16) characters.
+const char BUILD_DATE[]   = "2025-08-20-18:00";     // 24hr format, need to fit max (16) characters.
 const char MAJOR_VERSION  = '0';
 const char MINOR_VERSION  = '1';
 const char PATCH_VERSION  = '2';
@@ -182,7 +182,6 @@ void initVars() {
     Serial.println("Running setup().");
     Serial.print("Initialize global vars");
 
-
     // -- Serial 1. --
     serial1Char = '\0';
 
@@ -231,11 +230,12 @@ void configPins() {
  *
  * @return void No output is returned.
  * @since  0.1.0 [2025-05-29-10:30pm] New.
+ * @since  0.1.2 [2025-08-20-18:00pm] Tweak output.
  */
 void beginSerialMonitor() {
 
     Serial.begin(SERIAL_MON_SPEED);
-    Serial.printf("Begin serial monitor (USB) @ %i bps.\n", SERIAL_MON_SPEED);
+    Serial.printf("\nBegin serial monitor (USB) @ %i bps.\n", SERIAL_MON_SPEED);
 }
 
 /**
@@ -245,11 +245,12 @@ void beginSerialMonitor() {
  * 
  * @return void No output is returned.
  * @since  0.1.0 [2025-05-29-10:30pm] New.
+ * @since  0.1.2 [2025-08-20-18:00pm] Tweak output.
  */
 void beginSerialInterfaces() {
 
     // -- Serial 1 interface. --
-    Serial.printf("\nBegin serial 1 (UART1) @ %i bps", SERIAL1_SPEED);
+    Serial.printf("Begin serial 1 (UART1) @ %i bps", SERIAL1_SPEED);
     serial1.begin(SERIAL1_SPEED, SERIAL_8N1, RTCM_RX, RTCM_TX);     // UART1 object. RX, TX.
     Serial.println(".");
 
