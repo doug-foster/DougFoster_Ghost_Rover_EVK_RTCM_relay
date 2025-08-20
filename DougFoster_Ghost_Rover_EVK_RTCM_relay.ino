@@ -9,6 +9,7 @@
  * @since    0.1.0 [2025-05-29-08:30pm] New.
  * @since    0.1.1 [2025-06-06-06:00pm].
  * @since    0.1.2 [2025-07-11-09:00pm] Parallel "DougFoster_Ghost_Rover_BT_relay.ino".
+ * @since    0.1.2 [2025-08-20-02:30pm] Checking RTCM out.
  * @link     http://dougfoster.me.
  *
  * ===================================
@@ -88,7 +89,7 @@
 // ===================================
 
 // -- Version. --
-const char BUILD_DATE[]   = "2025-07-11-21:00";     // 24hr format, need to fit max (16) characters.
+const char BUILD_DATE[]   = "2025-08-20-14:30";     // 24hr format, need to fit max (16) characters.
 const char MAJOR_VERSION  = '0';
 const char MINOR_VERSION  = '1';
 const char PATCH_VERSION  = '2';
@@ -144,7 +145,7 @@ TaskHandle_t radioRtcmLEDtaskHandle;            // Radio RTCM LED task handle.
 // -- Commands. --
 const  uint8_t  NUM_COMMANDS           = 4;     // How many possible commands.
 const  char     EXIT_TEST              = '!';   // Exit test mode.
-const  char*    commands[NUM_COMMANDS] = {      // Valid commands. Point to array of C-strings.
+const  char*    COMMANDS[NUM_COMMANDS] = {      // Valid commands. Point to array of C-strings.
                                          "testLEDr",
                                          "testRad",
                                          "debugRad",
@@ -334,15 +335,15 @@ void checkSerialMonitor(char print = ' ') {
     uint8_t whichMonitorCommand;        // Which command was entered from the USB serial monitor.
 
     // -- Print valid commands. --
-    if(print == 'p') {
+    if (print == 'p') {
         Serial.print("\nValid commands: ");
         for (size_t i = 0; i < NUM_COMMANDS-1; i++) {
-            if ((i != 0) && (i % 7 == 0)) {             // List a max of (7) commands per line.
+            if ((i != 0) && (i % 7 == 0)) {                 // List a max of (7) commands per line.
                 Serial.println();
             }
-            Serial.printf("%s, ", commands[i]);
+            Serial.printf("%s, ", COMMANDS[i]);
         }
-        Serial.printf("%s.\n! to quit.\n\n", commands[NUM_COMMANDS-1]);
+        Serial.printf("%s.\n! to quit.\n\n", COMMANDS[NUM_COMMANDS-1]);
         return;                         // Done for now.
     }
 
@@ -356,43 +357,44 @@ void checkSerialMonitor(char print = ' ') {
             monitorCommand[posnMon] = '\0';                 // We're done reading, treat command[] as C-string.
             posnMon = 0;                                    // Reset command buffer position.
 
-        // - Which command? -
-        if(*monitorCommand == EXIT_TEST) {                  // Reset debug flags & return.
-            debugRad   = false;
-            Serial.println("All debugging disabled.");
-            return;
-        }
-        whichMonitorCommand = 99;                           // Which command was entered. Assume invalid until validated.
-            for (size_t i = 0; i < NUM_COMMANDS; i++) {
-            if(strcmp(monitorCommand, commands[i]) == 0) {  // Compare C-strings.
-                whichMonitorCommand = i;
-                break;
+            // - Which command? -
+            if (*monitorCommand == EXIT_TEST) {                     // Reset debug flags & return.
+                debugRad   = false;
+                Serial.println("All debugging disabled.");
+                return;
             }
-        }
+            whichMonitorCommand = 99;                               // Which command was entered. Assume invalid until validated.
+            for (size_t i = 0; i < NUM_COMMANDS; i++) {
+                if (strcmp(monitorCommand, COMMANDS[i]) == 0) {     // Compare C-strings.
+                    whichMonitorCommand = i;
+                    break;
+                }
+            }
 
-        // - Valid command? -
-        if(whichMonitorCommand < 99) {   
+            // - Valid command? -
+            if (whichMonitorCommand < 99) {   
 
-            // Toggle command flag & print new state.
-            switch (whichMonitorCommand) {
-                    case 0:
-                        testLEDr = (testLEDr == true) ? false : true;       // Flip the state.
-                        Serial.printf("%s %s\n", commands[whichMonitorCommand], (testLEDr  ? "enabled." : "disabled."));
-                        break;
-                    case 1:
-                        testRad = (testRad == true) ? false : true;         // Flip the state.
-                        Serial.printf("%s %s\n", commands[whichMonitorCommand], (testRad  ? "enabled." : "disabled."));
-                        break;
-                    case 2:
-                        debugRad = (debugRad == true) ? false : true;       // Flip the state.
-                        Serial.printf("%s %s\n", commands[whichMonitorCommand], (debugRad ? "enabled." : "disabled."));
-                        break;
-                    case 3:
-                        reset = (reset == true) ? false : true;             // Flip the state.
-                        Serial.printf("%s %s\n", commands[whichMonitorCommand], (reset       ? "enabled." : "disabled."));
-                        break;
+                // Toggle command flag & print new state.
+                switch (whichMonitorCommand) {
+                        case 0:
+                            testLEDr = (testLEDr == true) ? false : true;       // Flip the state.
+                            Serial.printf("%s %s\n", COMMANDS[whichMonitorCommand], (testLEDr  ? "enabled." : "disabled."));
+                            break;
+                        case 1:
+                            testRad = (testRad == true) ? false : true;         // Flip the state.
+                            Serial.printf("%s %s\n", COMMANDS[whichMonitorCommand], (testRad  ? "enabled." : "disabled."));
+                            break;
+                        case 2:
+                            debugRad = (debugRad == true) ? false : true;       // Flip the state.
+                            Serial.printf("%s %s\n", COMMANDS[whichMonitorCommand], (debugRad ? "enabled." : "disabled."));
+                            break;
+                        case 3:
+                            reset = (reset == true) ? false : true;             // Flip the state.
+                            Serial.printf("%s %s\n", COMMANDS[whichMonitorCommand], (reset       ? "enabled." : "disabled."));
+                            break;
                 };
                 monitorCommand[0] = '\0';                                   // Ready for the next time.
+
             } else {
 
                 // Invalid command.
@@ -469,7 +471,7 @@ void checkSerialMonitor(char print = ' ') {
                 while (true) {                                              // Infinite loop.
                     if (Serial.available() > 0) {
                         monitorChar = Serial.read();                        // Read input from serial monitor.
-                        if(monitorChar == EXIT_TEST) {                      // All done?
+                        if (monitorChar == EXIT_TEST) {                      // All done?
                             Serial.println("HC-12 command mode disabled.\n");
                             digitalWrite(HC12_SET, HIGH);
                             Serial.read();                                  // Clear the newline.
