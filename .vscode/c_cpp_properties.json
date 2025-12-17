@@ -1,0 +1,73 @@
+{
+  "configurations": [
+    {
+      "name": "Arduino",
+      "includePath": [
+        "/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/libraries/**",
+        "/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/**",
+        "/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/**"
+      ],
+      "forcedInclude": [],
+      "compilerPath": "/Users/dougfoster/Library/Arduino15/internal/esp32_esp-rv32_2507_8f2bc91edab2e44d/bin/riscv32-esp-elf-g++",
+      "compilerArgs": [
+        "/Users/dougfoster/Library/Arduino15/internal/esp32_esp-rv32_2507_8f2bc91edab2e44d/bin/riscv32-esp-elf-g++",
+        "-MMD",
+        "-c",
+        "@/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/flags/cpp_flags",
+        "-w",
+        "-Os",
+        "-Werror=return-type",
+        "-DF_CPU=160000000L",
+        "-DARDUINO=10607",
+        "-DARDUINO_ESP32C6_THING_PLUS",
+        "-DARDUINO_ARCH_ESP32",
+        "-DARDUINO_BOARD=\"ESP32C6_THING_PLUS\"",
+        "-DARDUINO_VARIANT=\"sparkfun_esp32c6_thing_plus\"",
+        "-DARDUINO_PARTITION_default",
+        "-DARDUINO_HOST_OS=\"macosx\"",
+        "-DARDUINO_FQBN=\"esp32:esp32:sparkfun_esp32c6_thing_plus:UploadSpeed=921600,CDCOnBoot=default,CPUFreq=160,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default\"",
+        "-DESP32=ESP32",
+        "-DCORE_DEBUG_LEVEL=0",
+        "-DARDUINO_USB_MODE=1",
+        "-DARDUINO_USB_CDC_ON_BOOT=1",
+        "@/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/flags/defines",
+        "-I/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay",
+        "-iprefix",
+        "/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/",
+        "@/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/flags/includes",
+        "-I/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/qio_qspi/include",
+        "-I/Users/dougfoster/Library/Arduino15/internal/esp32_esp32_3.3.3_6ba8f974995a4c6b/cores/esp32",
+        "-I/Users/dougfoster/Library/Arduino15/internal/esp32_esp32_3.3.3_6ba8f974995a4c6b/variants/sparkfun_esp32c6_thing_plus",
+        "@/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/build_opt.h",
+        "@/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/file_opts",
+        "/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/sketch/DougFoster_Ghost_Rover_EVK_RTCM_relay.ino.cpp",
+        "-o",
+        "/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/sketch/DougFoster_Ghost_Rover_EVK_RTCM_relay.ino.cpp.o"
+      ],
+      "defines": [
+        "F_CPU=160000000L",
+        "ARDUINO=10607",
+        "ARDUINO_ESP32C6_THING_PLUS",
+        "ARDUINO_ARCH_ESP32",
+        "ARDUINO_BOARD=\"ESP32C6_THING_PLUS\"",
+        "ARDUINO_VARIANT=\"sparkfun_esp32c6_thing_plus\"",
+        "ARDUINO_PARTITION_default",
+        "ARDUINO_HOST_OS=\"macosx\"",
+        "ARDUINO_FQBN=\"esp32:esp32:sparkfun_esp32c6_thing_plus:UploadSpeed=921600,CDCOnBoot=default,CPUFreq=160,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default\"",
+        "ESP32=ESP32",
+        "CORE_DEBUG_LEVEL=0",
+        "ARDUINO_USB_MODE=1",
+        "ARDUINO_USB_CDC_ON_BOOT=1",
+        "ARDUINO_BOARD=\\\"ESP32C6_THING_PLUS\\\"\"",
+        "ARDUINO_VARIANT=\\\"sparkfun_esp32c6_thing_plus\\\"\"",
+        "ARDUINO_HOST_OS=\\\"macosx\\\"\"",
+        "ARDUINO_FQBN=\\\"esp32:esp32:sparkfun_esp32c6_thing_plus:UploadSpeed=921600,CDCOnBoot=default,CPUFreq=160,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default\\\"\"",
+        "ARDUINO_CORE_BUILD",
+        "USBCON"
+      ],
+      "cStandard": "c17",
+      "cppStandard": "c++17"
+    }
+  ],
+  "version": 4
+}

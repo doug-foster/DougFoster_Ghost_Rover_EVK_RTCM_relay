@@ -1,0 +1,14 @@
+profiles:
+  RTCM_relay_ESP32-C6:
+    fqbn: esp32:esp32:sparkfun_esp32c6_thing_plus:UploadSpeed=921600,CDCOnBoot=default,CPUFreq=160,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default
+    platforms:
+      - platform: esp32:esp32 (3.3.3)
+    programmer: ""
+    port_config:
+      baudrate: "115200"
+      lineEnding: "\r\n"
+      bits: "8"
+      parity: none
+      stop_bits: "1"
+    port: /dev/cu.usbmodem2141401
+default_profile: RTCM_relay_ESP32-C6

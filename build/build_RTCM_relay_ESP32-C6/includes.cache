@@ -1,0 +1,59 @@
+[
+  {
+    "added_include_path": "/Users/dougfoster/Library/Arduino15/internal/esp32_esp32_3.3.3_6ba8f974995a4c6b/cores/esp32"
+  },
+  {
+    "added_include_path": "/Users/dougfoster/Library/Arduino15/internal/esp32_esp32_3.3.3_6ba8f974995a4c6b/variants/sparkfun_esp32c6_thing_plus"
+  },
+  {
+    "compile": {
+      "source_path": "/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/sketch/DougFoster_Ghost_Rover_EVK_RTCM_relay.ino.cpp",
+      "object_path": "/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/sketch/DougFoster_Ghost_Rover_EVK_RTCM_relay.ino.cpp.o",
+      "depfile_path": "/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/sketch/DougFoster_Ghost_Rover_EVK_RTCM_relay.ino.cpp.d"
+    },
+    "compile_task": {
+      "args": [
+        "/Users/dougfoster/Library/Arduino15/internal/esp32_esp-rv32_2507_8f2bc91edab2e44d/bin/riscv32-esp-elf-g++",
+        "-c",
+        "@/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/flags/cpp_flags",
+        "-w",
+        "-Os",
+        "-Werror=return-type",
+        "-w",
+        "-x",
+        "c++",
+        "-E",
+        "-CC",
+        "-DF_CPU=160000000L",
+        "-DARDUINO=10607",
+        "-DARDUINO_ESP32C6_THING_PLUS",
+        "-DARDUINO_ARCH_ESP32",
+        "-DARDUINO_BOARD=\"ESP32C6_THING_PLUS\"",
+        "-DARDUINO_VARIANT=\"sparkfun_esp32c6_thing_plus\"",
+        "-DARDUINO_PARTITION_default",
+        "-DARDUINO_HOST_OS=\"macosx\"",
+        "-DARDUINO_FQBN=\"esp32:esp32:sparkfun_esp32c6_thing_plus:UploadSpeed=921600,CDCOnBoot=default,CPUFreq=160,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default\"",
+        "-DESP32=ESP32",
+        "-DCORE_DEBUG_LEVEL=0",
+        "-DARDUINO_USB_MODE=1",
+        "-DARDUINO_USB_CDC_ON_BOOT=1",
+        "@/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/flags/defines",
+        "-I/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay",
+        "-iprefix",
+        "/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/",
+        "@/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/flags/includes",
+        "-I/Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/qio_qspi/include",
+        "-I/Users/dougfoster/Library/Arduino15/internal/esp32_esp32_3.3.3_6ba8f974995a4c6b/cores/esp32",
+        "-I/Users/dougfoster/Library/Arduino15/internal/esp32_esp32_3.3.3_6ba8f974995a4c6b/variants/sparkfun_esp32c6_thing_plus",
+        "@/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/build_opt.h",
+        "@/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/file_opts",
+        "/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/sketch/DougFoster_Ghost_Rover_EVK_RTCM_relay.ino.cpp",
+        "-o",
+        "/dev/null"
+      ]
+    }
+  },
+  {
+    "missing_include_h": ""
+  }
+]

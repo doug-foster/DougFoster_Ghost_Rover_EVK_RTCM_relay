@@ -1,0 +1,30 @@
+/Users/dougfoster/Library/CloudStorage/Dropbox/Data/doug/Topics/_dev-arduino/DougFoster_Ghost_Rover_EVK_RTCM_relay/build/build_RTCM_relay_ESP32-C6/core/esp32-hal-periman.c.o: \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32_3.3.3_6ba8f974995a4c6b/cores/esp32/esp32-hal-periman.c \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32_3.3.3_6ba8f974995a4c6b/cores/esp32/esp32-hal-log.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/qio_qspi/include/sdkconfig.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_timer/include/esp_timer.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/newlib/platform_include/stdio.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_common/include/esp_err.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_common/include/esp_compiler.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_hw_support/include/esp_etm.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_rom/esp32c6/include/esp32c6/rom/ets_sys.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_rom/include/esp_rom_sys.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/soc/esp32c6/include/soc/reset_reasons.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/soc/esp32c6/include/soc/soc_caps.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log_config.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log_level.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_common/include/esp_assert.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log_color.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log_buffer.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log_timestamp.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log_write.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log_format.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log_args.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_common/include/esp_macros.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_common/include/esp_assert.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_log_attr.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_common/include/esp_attr.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/log/include/esp_private/log_attr.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32_3.3.3_6ba8f974995a4c6b/cores/esp32/esp32-hal-periman.h \
+ /Users/dougfoster/Library/Arduino15/internal/esp32_esp32-arduino-libs_idf-release_v5.5-f1a1df9b-v3_a6193c21d0/esp32c6/include/esp_common/include/esp_bit_defs.h
