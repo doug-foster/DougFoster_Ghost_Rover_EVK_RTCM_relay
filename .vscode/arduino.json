@@ -1,5 +1,5 @@
 {
-  "port": "/dev/cu.usbmodem2141401",
+  "port": "/dev/cu.EVKRover-8ECE",
   "configuration": "UploadSpeed=921600,CDCOnBoot=default,CPUFreq=160,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default",
   "output": "build",
   "board": "esp32:esp32:sparkfun_esp32c6_thing_plus",
@@ -10,7 +10,7 @@
   "compile_profile": "RTCM_relay_ESP32-C6",
   "monitorPortSettings": {
     "settings": {
-      "port": "/dev/tty.usbmodem2141401",
+      "port": "/dev/tty.usbmodem2141101",
       "baudRate": 115200,
       "lineEnding": "\r\n",
       "dataBits": 8,
